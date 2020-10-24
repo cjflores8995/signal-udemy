@@ -1,0 +1,55 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+
+<div class="row">
+    <div class="col-sm-4">
+        <h1>Contador de visitas</h1>
+        <div class="alert alert-success">
+            <div class="form-group">
+                <input type="text" id="text" placeholder="mensaje" class="form-control" />
+            </div>
+            <button id="send" type="submit" class="btn btn-primary">Enviar</button>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <h1>Contador de visitas</h1>
+        <table class="table table-bordered" id="simpleTable"></table>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(function () {
+
+            //se establece conexion con el endpoint de signalR
+            var connection = $.connection('/realtime');
+            connection.logging = false;
+
+            //se activa cuando el servidor envia data al cliente
+            connection.received(function (data) {
+                var newRow = `<tr>
+                                <td>${data}</td>
+                              </tr>`;
+
+                $('#simpleTable').prepend(newRow);
+            });
+
+            //muestra un mensaje cuando se presenta un error
+            connection.error(function (err) {
+                alert('Hubo un problema: ' + err.Message);
+            });
+
+            //el cliente se conecta al servidor
+            connection.start()
+                .done(function () {
+                    $('#send').click(function () {
+                        //si toda la conexión es correcta el cliente envia data al servidor
+                        connection.send($('#text').val());
+                        $('#text').val('').focus();
+                    });
+                });
+        });
+    </script>
+    }
