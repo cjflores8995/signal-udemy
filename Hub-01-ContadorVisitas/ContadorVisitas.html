@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Contador visitas utilizando Hubs</title>
+    <link href="Content/bootstrap.css" rel="stylesheet" />
+</head>
+<body>
+
+    <div class="jumbotron text-center">
+        <h1>ASP.NET SignalR</h1>
+        <p>Contador de visitas usando Hubs</p>
+    </div>
+
+    <div class="container">
+        <input type="text" class="form-control" id="text" />
+        <button class="btn btn-success" id="send">Broadcast</button>
+        <hr />
+
+        <ul id="messages" class="list-group"></ul>
+    </div>
+
+    <script src="Scripts/jquery-3.0.0.min.js"></script>
+    <script src="Scripts/jquery.signalR-2.4.1.min.js"></script>
+    <script src="realtime/hubs"></script>
+
+    <script>
+        $(function () {
+            var hub = $.connection.contadorHub;
+            $.connection.logging = true;
+
+            hub.client.message = function (text) {
+                $('#messages').prepend(`<li class="list-group-item">${text}</li>`);
+            };
+
+            $.connection.hub.start().done(function () {
+                $('#send').click(function () {
+                    var text = $('#text').val();
+                    hub.server.broadcast(text);
+                    $('#text').val('').focus();
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
