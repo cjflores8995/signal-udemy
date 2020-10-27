@@ -1,0 +1,36 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="jumbotron text-center">
+    <h1>ASP.NET SignalR</h1>
+    <p>Broadcast usando Hubs</p>
+</div>
+
+<div class="container">
+    <input type="text" class="form-control" id="msg" />
+    <button class="btn btn-success" id="broadcast">Broadcast</button>
+    <hr />
+
+    <ul id="messages" class="list-group"></ul>
+</div>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            var broadcaster = $.connection.broadcastHub;
+
+            broadcaster.client.displayText = function (text) {
+                $('#messages').append(`<li class="list-group-item">${text}</li>`);
+            }
+
+            $.connection.hub.start().done(function () {
+                $('#broadcast').click(function () {
+                    broadcaster.server.broadcastMessage($('#msg').val());
+                    $('#msg').val('').focus();
+                });
+            });
+        });
+    </script>
+    }
